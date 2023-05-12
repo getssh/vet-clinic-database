@@ -12,3 +12,18 @@ CREATE TABLE animals (
 /* Alter animal table */
 
 ALTER TABLE animals ADD COLUMN species VARCHAR(255);
+
+/* create owners table */
+
+CREATE TABLE owners (
+    id SERIAL PRIMARY KEY,
+    full_name VARCHAR(100),
+    age INTEGER
+  );
+
+/* create species table */
+
+CREATE TABLE species (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+  );
