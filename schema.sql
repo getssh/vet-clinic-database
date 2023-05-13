@@ -41,3 +41,30 @@ CREATE TABLE species (
   ALTER TABLE animals ADD CONSTRAINT fk_animals_species_id FOREIGN KEY (species_id) REFERENCES species (id);
   ALTER TABLE animals ADD COLUMN owner_id INTEGER;
   ALTER TABLE animals ADD CONSTRAINT fk_animals_owner_id FOREIGN KEY (owner_id) REFERENCES owners (id);
+
+  /*
+  There is a many-to-many relationship between the tables species and vets:
+  a vet can specialize in multiple species, and a species can have multiple 
+  vets specialized in it.
+  Create a "join table" called specializations to handle this relationship.
+*/
+
+CREATE TABLE specializations (
+  species_id INTEGER REFERENCES species(id),
+  vet_id INTEGER REFERENCES vets(id),
+  PRIMARY KEY (species_id, vet_id)
+);
+
+/*
+There is a many-to-many relationship between the tables animals and vets:
+an animal can visit multiple vets and one vet can be visited by multiple animals.
+Create a "join table" called visits to handle this relationship,
+it should also keep track of the date of the visit.
+*/
+
+CREATE TABLE visits (
+  animal_id INTEGER REFERENCES animals(id),
+  vet_id INTEGER REFERENCES vets(id),
+  visit_date DATE,
+  PRIMARY KEY (animal_id, vet_id, visit_date)
+);
