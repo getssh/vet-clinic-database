@@ -111,3 +111,84 @@ LEFT JOIN animals a ON o.id = a.owner_id
 GROUP BY o.full_name
 ORDER BY animal_count DESC
 LIMIT 1;
+
+/*
+  Write queries to answer the following:
+  Who was the last animal seen by William Tatcher?
+  How many different animals did Stephanie Mendez see?
+  List all vets and their specialties, including vets with no specialties.
+  List all animals that visited Stephanie Mendez between April 1st and August 30th, 2020.
+  What animal has the most visits to vets?
+  Who was Maisy Smith's first visit?
+  Details for most recent visit: animal information, vet information, and date of visit.
+  How many visits were with a vet that did not specialize in that animal's species?
+  What specialty should Maisy Smith consider getting? Look for the species she gets the most.
+*/
+
+SELECT a.name AS animal_name
+FROM animals a
+INNER JOIN visits v ON a.id = v.animal_id
+INNER JOIN vets vt ON v.vet_id = vt.id
+WHERE vt.name = 'William Tatcher'
+ORDER BY v.visit_date DESC
+LIMIT 1;
+
+SELECT COUNT(DISTINCT a.id) AS animal_count
+FROM animals a
+INNER JOIN visits v ON a.id = v.animal_id
+INNER JOIN vets vt ON v.vet_id = vt.id
+WHERE vt.name = 'Stephanie Mendez';
+
+SELECT v.name AS vet_name, s.name AS specialty_name
+FROM vets v
+LEFT JOIN specializations sp ON v.id = sp.vet_id
+LEFT JOIN species s ON sp.species_id = s.id;
+
+SELECT a.name AS animal_name
+FROM animals a
+INNER JOIN visits v ON a.id = v.animal_id
+INNER JOIN vets vt ON v.vet_id = vt.id
+WHERE vt.name = 'Stephanie Mendez'
+  AND v.visit_date BETWEEN '2020-04-01' AND '2020-08-30';
+
+SELECT a.name AS animal_name, COUNT(v.animal_id) AS visit_count
+FROM animals a
+LEFT JOIN visits v ON a.id = v.animal_id
+GROUP BY a.id
+ORDER BY visit_count DESC
+LIMIT 1;
+
+SELECT a.name AS animal_name
+FROM animals a
+INNER JOIN visits v ON a.id = v.animal_id
+INNER JOIN vets vt ON v.vet_id = vt.id
+WHERE vt.name = 'Maisy Smith'
+ORDER BY v.visit_date ASC
+LIMIT 1;
+
+SELECT V.visit_date, A.name AS animal_name, A.date_of_birth, A.escape_attempts, A.neutered, A.weight_kg,
+  S.name AS species_type, O.full_name AS owner_name, E.name AS vet_name, E.age AS vet_age,
+  E.date_of_graduation
+  FROM visits V
+  JOIN animals A ON A.id=V.animal_id
+  JOIN species S ON S.id=A.species_id
+  JOIN owners O ON O.id=A.owner_id
+  JOIN vets E ON E.id=V.vet_id
+  ORDER BY V.visit_date DESC
+  LIMIT 1;
+
+SELECT COUNT(*) AS visit_count
+FROM visits v
+INNER JOIN animals a ON v.animal_id = a.id
+INNER JOIN vets vt ON v.vet_id = vt.id
+LEFT JOIN specializations sp ON vt.id = sp.vet_id AND a.species_id = sp.species_id
+WHERE sp.vet_id IS NULL;
+
+SELECT S.name AS animal_type, COUNT(V.animal_id) AS total_visits
+FROM visits V
+JOIN vets E ON E.id=V.vet_id
+JOIN animals A ON A.id=V.animal_id
+JOIN species S ON S.id=A.species_id
+WHERE E.name='Maisy Smith'
+GROUP BY S.name
+ORDER BY total_visits DESC LIMIT 1;
